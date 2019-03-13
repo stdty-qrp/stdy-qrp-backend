@@ -1,0 +1,11 @@
+const reservationsRouter = require('express').Router()
+const Reservation = require('../models/reservation')
+
+
+reservationsRouter.get('/', async (request, response) => {
+  const reservations = await Reservation.find({})
+  console.log('result: ',reservations)
+  return response.json(reservations.map(Reservation.format))
+})
+
+module.exports = reservationsRouter
