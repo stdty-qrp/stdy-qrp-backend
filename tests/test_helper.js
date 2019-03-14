@@ -17,7 +17,7 @@ const initialReservations = [
 
 const reservationsInDb = async () => {
   const reservations = await Reservation.find({})
-  return reservations.map(reservation => reservation.toJSON())
+  return reservations.map(Reservation.format)
 }
 
 module.exports = {
