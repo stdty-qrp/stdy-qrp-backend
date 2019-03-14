@@ -32,6 +32,22 @@ describe('reservations', () => {
     // TODO
     expect(true).toBe(true)
   })
+
+  test('a reservation can be deleted', async () => {
+    const reservationsAtStart = await helper.reservationsInDb()
+    const reservationToDelete = reservationsAtStart[0]
+
+    await api
+      .delete(`/api/reservations/${reservationToDelete.id}`)
+      .expect(204)
+
+    const reservationsAtEnd = await helper.reservationsInDb()
+    expect(reservationsAtEnd.length).toBe(helper.initialReservations.length - 1)
+
+    const names = reservationsAtEnd.map(r => r.name)
+    expect(names).not.toContain(reservationToDelete.name)
+  })
+
 })
 
 afterAll(() => {
