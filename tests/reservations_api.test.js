@@ -7,7 +7,7 @@ const Reservation = require('../models/reservation')
 
 const api = supertest(app)
 
-describe('reservations', () => {
+describe('when there is initially some reservations saved', () => {
   beforeEach(async () => {
     await Reservation.remove({})
 
@@ -28,9 +28,45 @@ describe('reservations', () => {
     expect(response.body[0].id).toBeDefined()
   })
 
-  test('a reservation can be added', async () => {
-    // TODO
-    expect(true).toBe(true)
+  describe.only('addition of a new reservation', () => {
+
+    test.only('a reservation can be added', async () => {
+      const newReservation = {
+        name: 'Test tseT',
+        startTime: '2019-03-13T15:00:00.000Z',
+        endTime: '2019-03-13T16:00:00.000Z',
+        active: true,
+      }
+
+      const reservation = await api
+        .post('/api/reservations')
+        .send(newReservation)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+      console.log('received', reservation)
+
+      const reservationsAtEnd = await helper.reservationsInDb()
+      expect(reservationsAtEnd.length).toBe(helper.initialReservations.length + 1)
+
+      const names = reservationsAtEnd.map(b => b.name)
+      expect(names).toContain('Test tseT')
+    })
+
+    test('fails with status code 400 if data is invalid', async () => {
+      const newReservation = {
+        active: true,
+      }
+
+      await api
+        .post('/api/reservations')
+        .send(newReservation)
+        .expect(400)
+
+      const reservationsAtEnd = await helper.reservationsInDb()
+      expect(reservationsAtEnd.length).toBe(helper.initialReservations.length)
+    })
+
   })
 
   test('a reservation can be deleted', async () => {
