@@ -1,0 +1,9 @@
+PUT http://localhost:3001/api/reservations/5c891fb01c9d440000a83c83
+content-type: application/json
+
+{
+  "startTime": "2019-03-13T15:00:00.000Z",
+  "endTime": "2019-03-13T14:15:00.000Z",
+  "name": "Testi1",
+  "active": false
+} 

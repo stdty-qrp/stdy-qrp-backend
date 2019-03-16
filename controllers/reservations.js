@@ -33,4 +33,25 @@ reservationsRouter.delete('/:id', async (req, res, next) => {
   }
 })
 
+reservationsRouter.put('/:id', (req, res) => {
+  const body = req.body
+  const reservation = {
+    name: body.name,
+    startTime: body.startTime,
+    endTime: body.endTime,
+    active: body.active,
+  }
+
+  Reservation.findOneAndUpdate({ _id: req.params.id }, reservation, { new: true })
+    .then(updatedReservation => {
+      res.json(Reservation.format(updatedReservation))
+    })
+    .catch(error => {
+      console.log(error)
+      res.status(400).send({
+        error: 'Something went wrong :('
+      })
+    })
+})
+
 module.exports = reservationsRouter
