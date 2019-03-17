@@ -28,9 +28,9 @@ describe('when there is initially some reservations saved', () => {
     expect(response.body[0].id).toBeDefined()
   })
 
-  describe.only('addition of a new reservation', () => {
+  describe('addition of a new reservation', () => {
 
-    test.only('a reservation can be added', async () => {
+    test('a reservation can be added', async () => {
       const newReservation = {
         name: 'Test tseT',
         startTime: '2019-03-13T15:00:00.000Z',
@@ -38,13 +38,11 @@ describe('when there is initially some reservations saved', () => {
         active: true,
       }
 
-      const reservation = await api
+      await api
         .post('/api/reservations')
         .send(newReservation)
         .expect(200)
         .expect('Content-Type', /application\/json/)
-
-      console.log('received', reservation)
 
       const reservationsAtEnd = await helper.reservationsInDb()
       expect(reservationsAtEnd.length).toBe(helper.initialReservations.length + 1)
@@ -66,6 +64,8 @@ describe('when there is initially some reservations saved', () => {
       const reservationsAtEnd = await helper.reservationsInDb()
       expect(reservationsAtEnd.length).toBe(helper.initialReservations.length)
     })
+
+    test('')
 
   })
 
