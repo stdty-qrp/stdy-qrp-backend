@@ -1,14 +1,15 @@
 const usersRouter = require('express').Router()
 const User = require('../models/user')
 
-usersRouter.get('/', async (request, response) => {
+usersRouter.get('/', async (req, res) => {
   const users = await User.find({})
-  response.json(users.map(User.format))
+    .populate('reservations', { id: 1, name: 1, startTime: 1, endTime: 1, active: 1 })
+  res.json(users.map(u => u.toJSON()))
 })
 
-usersRouter.get('/:id', async (request, response) => {
-  const user = await User.findOne({ _id: request.params.id })
-  response.json(User.format(user))
+usersRouter.get('/:id', async (req, res) => {
+  const user = await User.findOne({ _id: req.params.id })
+  res.json(user.toJSON())
 })
 
 usersRouter.post('/', async (req, res, next) => {
@@ -23,7 +24,7 @@ usersRouter.post('/', async (req, res, next) => {
 
   try {
     const savedUser = await user.save()
-    res.json(User.format(savedUser))
+    res.json(savedUser.toJSON())
   } catch (exception) {
     next(exception)
   }

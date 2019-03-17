@@ -2,10 +2,10 @@ const reservationsRouter = require('express').Router()
 const Reservation = require('../models/reservation')
 const User = require('../models/user')
 
-reservationsRouter.get('/', async (request, response) => {
+reservationsRouter.get('/', async (req, res) => {
   const reservations = await Reservation.find({})
-    .find({}).populate('user', { username: 1, id: 1 })
-  response.json(reservations.map(Reservation.format))
+    .populate('user', { id: 1, username: 1 })
+  res.json(reservations.map(r => r.toJSON()))
 })
 
 reservationsRouter.post('/', async (req, res, next) => {
@@ -39,7 +39,7 @@ reservationsRouter.post('/', async (req, res, next) => {
     await user.save()
 
     await Reservation.populate(savedReservation, { path: 'user', select: { 'username': 1, 'id': 1 } })
-    res.json(Reservation.format(savedReservation))
+    res.json(savedReservation.toJSON())
   } catch(exception) {
     next(exception)
   }
@@ -65,7 +65,7 @@ reservationsRouter.put('/:id', (req, res) => {
 
   Reservation.findOneAndUpdate({ _id: req.params.id }, reservation, { new: true })
     .then(updatedReservation => {
-      res.json(Reservation.format(updatedReservation))
+      res.json(updatedReservation.toJSON())
     })
     .catch(error => {
       console.log(error)

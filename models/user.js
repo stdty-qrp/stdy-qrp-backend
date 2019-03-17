@@ -17,16 +17,13 @@ const userSchema = new mongoose.Schema({
   ],
 })
 
-userSchema.statics.format = (user) => {
-  return {
-    id: user._id,
-    username: user.username,
-    name: user.name,
-    email: user.email,
-    reservations: user.reservations,
-    created: user.created
+userSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id
+    delete returnedObject._id
+    delete returnedObject.__v
   }
-}
+})
 
 const User = mongoose.model('User', userSchema)
 

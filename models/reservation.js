@@ -21,16 +21,13 @@ const reservationSchema = new mongoose.Schema({
   },
 })
 
-reservationSchema.statics.format = (reservation) => {
-  return {
-    id: reservation._id,
-    startTime: reservation.startTime,
-    endTime: reservation.endTime,
-    name: reservation.name,
-    active: reservation.active,
-    user: reservation.user,
+reservationSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id
+    delete returnedObject._id
+    delete returnedObject.__v
   }
-}
+})
 
 const Reservation = mongoose.model('Reservation', reservationSchema)
 

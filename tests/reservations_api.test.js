@@ -11,16 +11,12 @@ const api = supertest(app)
 describe('when there is initially some reservations saved', () => {
   beforeEach(async () => {
     await User.remove({})
-
     const userObjects = helper.initialUsers.map(user => new User(user))
     const usersPromiseArray = userObjects.map(user => user.save())
     await Promise.all(usersPromiseArray)
 
     await Reservation.remove({})
-
     const reservationObjects = helper.initialReservations.map(reservation => new Reservation(reservation))
-
-
     const reservationsPromiseArray = reservationObjects.map(reservation => reservation.save())
     await Promise.all(reservationsPromiseArray)
   })
