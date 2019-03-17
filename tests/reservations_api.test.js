@@ -33,8 +33,8 @@ describe('when there is initially some reservations saved', () => {
     test('a reservation can be added', async () => {
       const newReservation = {
         name: 'Test tseT',
-        startTime: '2019-03-13T15:00:00.000Z',
-        endTime: '2019-03-13T16:00:00.000Z',
+        startTime: Date.now(),
+        endTime: new Date(Date.now() + (1000 * 60 * 60)),
         active: true,
       }
 
@@ -65,7 +65,24 @@ describe('when there is initially some reservations saved', () => {
       expect(reservationsAtEnd.length).toBe(helper.initialReservations.length)
     })
 
-    test('')
+    test('creation fails with proper statuscode and message if end time has passed', async () => {
+      const newReservation = {
+        name: 'End time in the past',
+        startTime: new Date(Date.now() - (1000 * 60 * 61)),
+        endTime: new Date(Date.now() - (1000 * 60)),
+        active: true,
+      }
+
+      const result = await api
+        .post('/api/reservations')
+        .send(newReservation)
+        .expect(400)
+
+      expect(result.body.error).toContain('is before minimum allowed value')
+
+      const reservationsAtEnd = await helper.reservationsInDb()
+      expect(reservationsAtEnd.length).toBe(helper.initialReservations.length)
+    })
 
   })
 

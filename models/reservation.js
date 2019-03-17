@@ -12,6 +12,7 @@ const reservationSchema = new mongoose.Schema({
   endTime: {
     type: Date,
     required: true,
+    min: Date.now(),
   },
   active: Boolean
 })
