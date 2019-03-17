@@ -14,7 +14,7 @@ usersRouter.get('/:id', async (request, response) => {
 usersRouter.post('/', async (req, res, next) => {
   const body = req.body
 
-  const reservation = new User({
+  const user = new User({
     name: body.name,
     username: body.username,
     reservation: [],
@@ -22,7 +22,7 @@ usersRouter.post('/', async (req, res, next) => {
   })
 
   try {
-    const savedUser = await reservation.save()
+    const savedUser = await user.save()
     res.json(User.format(savedUser))
   } catch (exception) {
     next(exception)

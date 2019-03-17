@@ -1,11 +1,20 @@
 const mongoose = require('mongoose')
+const uniqueValidator = require('mongoose-unique-validator')
 
 const userSchema = new mongoose.Schema({
-  username: String,
+  username: {
+    type: String,
+    unique: true,
+  },
   name: String,
   email: String,
-  reservations: Array,
-  created: Date
+  created: Date,
+  reservations: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Reservation'
+    }
+  ],
 })
 
 userSchema.statics.format = (user) => {
@@ -20,5 +29,7 @@ userSchema.statics.format = (user) => {
 }
 
 const User = mongoose.model('User', userSchema)
+
+userSchema.plugin(uniqueValidator)
 
 module.exports = User

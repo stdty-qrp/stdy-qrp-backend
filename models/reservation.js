@@ -14,7 +14,11 @@ const reservationSchema = new mongoose.Schema({
     required: true,
     min: Date.now(),
   },
-  active: Boolean
+  active: Boolean,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
 })
 
 reservationSchema.statics.format = (reservation) => {
@@ -23,7 +27,8 @@ reservationSchema.statics.format = (reservation) => {
     startTime: reservation.startTime,
     endTime: reservation.endTime,
     name: reservation.name,
-    active: reservation.active
+    active: reservation.active,
+    user: reservation.user,
   }
 }
 
