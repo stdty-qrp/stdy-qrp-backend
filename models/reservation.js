@@ -13,6 +13,7 @@ const reservationSchema = new mongoose.Schema({
     type: Date,
     required: true,
     min: Date.now(),
+    validate: [dateValidator, 'startTime must be less than endTime'],
   },
   active: Boolean,
   user: {
@@ -20,6 +21,12 @@ const reservationSchema = new mongoose.Schema({
     ref: 'User',
   },
 })
+
+// https://stackoverflow.com/a/29416193/7010222
+function dateValidator(value) {
+  // `this` is the mongoose document
+  return this.startTime <= value
+}
 
 reservationSchema.set('toJSON', {
   transform: (document, returnedObject) => {

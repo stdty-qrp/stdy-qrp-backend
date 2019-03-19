@@ -91,6 +91,26 @@ describe('when there is initially some reservations saved', () => {
       expect(reservationsAtEnd.length).toBe(helper.initialReservations.length)
     })
 
+    test('creation fails if start time greater than end date', async () => {
+      const newReservation = {
+        name: 'Test tseT',
+        startTime: new Date(Date.now() + (1000 * 61 * 60)),
+        endTime: new Date(Date.now() + (1000 * 60 * 60)),
+        active: true,
+        username: 'TheBadMF',
+      }
+
+      const result = await api
+        .post('/api/reservations')
+        .send(newReservation)
+        .expect(400)
+
+      expect(result.body.error).toContain('startTime must be less than endTime')
+
+      const reservationsAtEnd = await helper.reservationsInDb()
+      expect(reservationsAtEnd.length).toBe(helper.initialReservations.length)
+    })
+
     test('creation succeeds with a fresh username', async () => {
       const usersAtStart = await helper.usersInDb()
 
@@ -161,7 +181,6 @@ describe('when there is initially some reservations saved', () => {
 
       const usersAtEnd = await helper.usersInDb()
       expect(usersAtEnd.length).toBe(usersAtStart.length)
-
     })
 
   })
