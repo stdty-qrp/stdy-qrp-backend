@@ -2,16 +2,12 @@ const reservationsRouter = require('express').Router()
 const Reservation = require('../models/reservation')
 const User = require('../models/user')
 const telegramBotService = require('../services/messageService')
+const moment = require('moment')
 
 reservationsRouter.get('/', async (req, res) => {
-  const reservations = await Reservation.find({ endTime: { $gte: new Date() } })  // FIXME
-    .populate('user', { id: 1, username: 1 })
-
-  res.json(reservations.map(r => r.toJSON()))
-})
-
-reservationsRouter.get('/all', async (req, res) => {
-  const reservations = await Reservation.find({})
+  const localTimeString = moment().locale('fi-FI')
+  const currentTime = moment(localTimeString, 'YYYY-MM-DD HH:mm:sss')
+  const reservations = await Reservation.find({ endTime: { $gte: currentTime } })  // FIXME
     .populate('user', { id: 1, username: 1 })
   res.json(reservations.map(r => r.toJSON()))
 })
@@ -36,8 +32,9 @@ reservationsRouter.post('/', async (req, res, next) => {
 
     const reservation = new Reservation({
       name: body.name,
-      startTime: body.startTime || new Date().toISOString(),
-      endTime: body.endTime || new Date(Date.now() + (1000 * 60 * 60)).toISOString(),
+      startTime: body.startTime,
+      endTime: body.endTime,
+      active: body.active || false,
       user: user._id,
     })
 
@@ -45,7 +42,7 @@ reservationsRouter.post('/', async (req, res, next) => {
     user.reservations = user.reservations.concat(savedReservation._id)
     await user.save()
     // let's send a message to Telegram
-    telegramBotService.sendMessage(`A new reservation created by ${user.username}. The topic is ${reservation.name}`)
+    telegramBotService.sendMessage(`A new reservation created by ${user.username}. The subject of the is ${reservation.name}`)
 
     await Reservation.populate(savedReservation, { path: 'user', select: { 'username': 1, 'id': 1 } })
     res.json(savedReservation.toJSON())
@@ -69,6 +66,7 @@ reservationsRouter.put('/:id', (req, res) => {
     name: body.name,
     startTime: body.startTime,
     endTime: body.endTime,
+    active: body.active,
   }
 
   Reservation.findOneAndUpdate({ _id: req.params.id }, reservation, { new: true })
