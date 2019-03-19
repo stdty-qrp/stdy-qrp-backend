@@ -4,6 +4,7 @@ const helper = require('./test_helper')
 const app = require('../app')
 
 const Reservation = require('../models/reservation')
+const Room = require('../models/room')
 const User = require('../models/user')
 
 const api = supertest(app)
@@ -56,7 +57,7 @@ describe('when there is initially some reservations saved', () => {
       expect(names).toContain('Test tseT')
     })
 
-    test.only('a reservation can be added with default values', async () => {
+    test('a reservation can be added with default values', async () => {
       const newReservation = {
         name: 'Test tseT',
         username: 'TheBadMF',
@@ -223,6 +224,20 @@ describe('when there is initially some reservations saved', () => {
     expect(names).not.toContain(reservationToDelete.name)
   })
 
+})
+
+describe('rooms', () => {
+  beforeEach(async () => {
+    await Room.remove({})
+    const roomObjects = helper.initialRooms.map(room => new Room(room))
+    const roomsPromiseArray = roomObjects.map(room => room.save())
+    await Promise.all(roomsPromiseArray)
+  })
+
+  test('all rooms are returned', async () => {
+    const response = await api.get('/api/rooms')
+    expect(response.body.length).toBe(helper.initialReservations.length)
+  })
 })
 
 afterAll(() => {

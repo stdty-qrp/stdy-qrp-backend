@@ -1,10 +1,24 @@
 const mongoose = require('mongoose')
 const Reservation = require('../models/reservation')
+const Room = require('../models/room')
 const User = require('../models/user')
 
 const reservationId1 = mongoose.Types.ObjectId()
 const reservationId2 = mongoose.Types.ObjectId()
 const userId1 = mongoose.Types.ObjectId()
+
+const initialRooms = [
+  {
+    _id: mongoose.Types.ObjectId(),
+    code: '123',
+    name: 'Boiler Room',
+  },
+  {
+    _id: mongoose.Types.ObjectId(),
+    code: '420',
+    name: 'Main Stage',
+  }
+]
 
 const initialUsers = [
   {
@@ -33,6 +47,11 @@ const initialReservations = [
   },
 ]
 
+const roomsInDb = async () => {
+  const rooms = await Room.find({})
+  return rooms.map(r => r.toJSON())
+}
+
 const reservationsInDb = async () => {
   const reservations = await Reservation.find({})
   return reservations.map(r => r.toJSON())
@@ -44,8 +63,10 @@ const usersInDb = async () => {
 }
 
 module.exports = {
+  initialRooms,
   initialReservations,
   initialUsers,
+  roomsInDb,
   reservationsInDb,
   usersInDb,
 }

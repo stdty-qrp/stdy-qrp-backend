@@ -3,6 +3,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
 const reservationsRouter = require('./controllers/reservations')
+const roomsRouter = require('./controllers/rooms')
 const usersRouter = require('./controllers/users')
 const middleware = require('./utils/middleware')
 const mongoose = require('mongoose')
@@ -20,7 +21,7 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true })
     logger.error('error conneting to MongoDB:', error.message)
   })
 
-if (process.env.TELEGRAM_BOT_TOKEN !== undefined){
+if (process.env.TELEGRAM_BOT_TOKEN !== undefined && process.env.NODE_ENV !== 'test') {
   const telegramService = initTelegramBot(process.env.TELEGRAM_BOT_TOKEN)
   telegramService.sendMessage('Hi, I\'m your host today!')
 }
@@ -31,6 +32,7 @@ app.use(bodyParser.json())
 app.use(middleware.requestLogger)
 
 app.use('/api/reservations', reservationsRouter)
+app.use('/api/rooms', roomsRouter)
 app.use('/api/users', usersRouter)
 
 app.use(middleware.unknownEndpoint)
