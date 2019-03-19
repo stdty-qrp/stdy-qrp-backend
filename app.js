@@ -1,8 +1,9 @@
 const config = require('./utils/config')
 const express = require('express')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 const app = express()
-// app.use(cors())
+app.use(cors())
 const reservationsRouter = require('./controllers/reservations')
 const usersRouter = require('./controllers/users')
 const middleware = require('./utils/middleware')
@@ -25,7 +26,7 @@ if (process.env.TELEGRAM_BOT_TOKEN !== undefined){
   telegramService.sendMessage('Hi, I\'m your host today!')
 }
 
-// app.use(cors())
+//app.use(cors())
 // app.use(express.static('build'))
 app.use(bodyParser.json())
 app.use(middleware.requestLogger)
