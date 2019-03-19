@@ -3,7 +3,6 @@ const Room = require('../models/room')
 
 roomsRouter.get('/', async (req, res) => {
   const rooms = await Room.find({})
-    .populate('reservations', { id: 1, name: 1, startTime: 1, endTime: 1, active: 1 })
   res.json(rooms.map(u => u.toJSON()))
 })
 
