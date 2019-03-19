@@ -9,6 +9,8 @@ const User = require('../models/user')
 
 const api = supertest(app)
 
+jest.mock('node-telegram-bot-api')
+
 describe('when there is initially some reservations saved', () => {
   beforeEach(async () => {
     await User.remove({})
