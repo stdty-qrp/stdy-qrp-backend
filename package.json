@@ -4,9 +4,9 @@
   "description": "This is Stdy QRp project backend",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=production node index.js",
-    "watch": "NODE_ENV=development nodemon index.js",
-    "test": "NODE_ENV=test jest --verbose --runInBand",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "watch": "Ncross-env ODE_ENV=development nodemon index.js",
+    "test": "Ncross-env ODE_ENV=test jest --verbose --runInBand",
     "lint": "eslint ."
   },
   "repository": {
