@@ -56,6 +56,29 @@ describe('when there is initially some reservations saved', () => {
       expect(names).toContain('Test tseT')
     })
 
+    test.only('a reservation can be added with default values', async () => {
+      const newReservation = {
+        name: 'Test tseT',
+        username: 'TheBadMF',
+      }
+
+      const result = await api
+        .post('/api/reservations')
+        .send(newReservation)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+      const reservation = result.body
+      // TODO: validate `startTime`, `endTime`
+      expect(reservation.active).toBe(true)
+
+      const reservationsAtEnd = await helper.reservationsInDb()
+      expect(reservationsAtEnd.length).toBe(helper.initialReservations.length + 1)
+
+      const names = reservationsAtEnd.map(b => b.name)
+      expect(names).toContain('Test tseT')
+    })
+
     test('fails with status code 400 if data is invalid', async () => {
       const newReservation = {
         active: true,
