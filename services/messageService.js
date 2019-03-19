@@ -1,10 +1,9 @@
 const TelegramBot = require('node-telegram-bot-api')
 
-const initTelegramBot = (token) => {
-  // replace the value below with the Telegram token you receive from @BotFather
+const telegramBotService = (function(){
 
   // Create a bot that uses 'polling' to fetch new updates
-  const bot = new TelegramBot(token, {
+  let bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, {
     polling: true
   })
 
@@ -36,6 +35,6 @@ const initTelegramBot = (token) => {
     }
   }
 
-}
+})()
 
-module.exports = initTelegramBot
+module.exports = telegramBotService

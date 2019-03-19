@@ -1,6 +1,7 @@
 const reservationsRouter = require('express').Router()
 const Reservation = require('../models/reservation')
 const User = require('../models/user')
+const telegramBotService = require('../services/messageService')
 
 reservationsRouter.get('/', async (req, res) => {
   const reservations = await Reservation.find({})
@@ -37,6 +38,8 @@ reservationsRouter.post('/', async (req, res, next) => {
     const savedReservation = await reservation.save()
     user.reservations = user.reservations.concat(savedReservation._id)
     await user.save()
+    // let's send a message to Telegram
+    telegramBotService.sendMessage(`A new reservation created by ${user.username}. The topic is ${reservation.name}`)
 
     await Reservation.populate(savedReservation, { path: 'user', select: { 'username': 1, 'id': 1 } })
     res.json(savedReservation.toJSON())
