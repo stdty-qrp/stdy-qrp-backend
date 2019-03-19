@@ -15,7 +15,6 @@ const reservationSchema = new mongoose.Schema({
     min: Date.now(),
     validate: [dateValidator, 'startTime must be less than endTime'],
   },
-  active: Boolean,
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

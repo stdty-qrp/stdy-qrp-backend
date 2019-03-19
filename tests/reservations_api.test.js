@@ -20,13 +20,25 @@ describe('when there is initially some reservations saved', () => {
 
     await Reservation.remove({})
     const reservationObjects = helper.initialReservations.map(reservation => new Reservation(reservation))
+
+    const inactiveReservation = reservationObjects.shift()
+    await inactiveReservation.save({ validateBeforeSave: false })
+
     const reservationsPromiseArray = reservationObjects.map(reservation => reservation.save())
     await Promise.all(reservationsPromiseArray)
   })
 
   test('all reservations are returned', async () => {
-    const response = await api.get('/api/reservations')
+    const response = await api.get('/api/reservations/all')
     expect(response.body.length).toBe(helper.initialReservations.length)
+  })
+
+  test('active reservations are returned', async () => {
+    const response = await api.get('/api/reservations')
+
+    response.body.forEach((reservation) => {
+      expect(new Date(reservation.endTime).getTime()).toBeGreaterThanOrEqual(new Date().getTime())
+    })
   })
 
   test('a valid id field is generated', async () => {
@@ -42,7 +54,6 @@ describe('when there is initially some reservations saved', () => {
         name: 'Test tseT',
         startTime: Date.now(),
         endTime: new Date(Date.now() + (1000 * 60 * 60)),
-        active: true,
         username: 'TheBadMF',
       }
 
@@ -65,15 +76,14 @@ describe('when there is initially some reservations saved', () => {
         username: 'TheBadMF',
       }
 
-      const result = await api
+      /* const result = */await api
         .post('/api/reservations')
         .send(newReservation)
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
-      const reservation = result.body
+      // const reservation = result.body
       // TODO: validate `startTime`, `endTime`
-      expect(reservation.active).toBe(true)
 
       const reservationsAtEnd = await helper.reservationsInDb()
       expect(reservationsAtEnd.length).toBe(helper.initialReservations.length + 1)
@@ -84,7 +94,6 @@ describe('when there is initially some reservations saved', () => {
 
     test('fails with status code 400 if data is invalid', async () => {
       const newReservation = {
-        active: true,
         username: 'TheBadMF',
       }
 
@@ -102,7 +111,6 @@ describe('when there is initially some reservations saved', () => {
         name: 'End time in the past',
         startTime: new Date(Date.now() - (1000 * 60 * 61)),
         endTime: new Date(Date.now() - (1000 * 60)),
-        active: true,
         username: 'TheBadMF',
       }
 
@@ -122,7 +130,6 @@ describe('when there is initially some reservations saved', () => {
         name: 'Test tseT',
         startTime: new Date(Date.now() + (1000 * 61 * 60)),
         endTime: new Date(Date.now() + (1000 * 60 * 60)),
-        active: true,
         username: 'TheBadMF',
       }
 
@@ -144,7 +151,6 @@ describe('when there is initially some reservations saved', () => {
         name: 'Test tseT',
         startTime: Date.now(),
         endTime: new Date(Date.now() + (1000 * 60 * 60)),
-        active: true,
         username: 'Stu Dent',
       }
 
@@ -168,7 +174,6 @@ describe('when there is initially some reservations saved', () => {
         name: 'Test tseT',
         startTime: Date.now(),
         endTime: new Date(Date.now() + (1000 * 60 * 60)),
-        active: true,
         username: 'TheBadMF',
       }
 
@@ -192,7 +197,6 @@ describe('when there is initially some reservations saved', () => {
         name: 'Test tseT',
         startTime: Date.now(),
         endTime: new Date(Date.now() + (1000 * 60 * 60)),
-        active: true,
       }
 
       const result = await api
@@ -238,7 +242,7 @@ describe('rooms', () => {
 
   test('all rooms are returned', async () => {
     const response = await api.get('/api/rooms')
-    expect(response.body.length).toBe(helper.initialReservations.length)
+    expect(response.body.length).toBe(helper.initialRooms.length)
   })
 })
 

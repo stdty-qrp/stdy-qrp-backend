@@ -5,6 +5,7 @@ const User = require('../models/user')
 
 const reservationId1 = mongoose.Types.ObjectId()
 const reservationId2 = mongoose.Types.ObjectId()
+const reservationId3 = mongoose.Types.ObjectId()
 const userId1 = mongoose.Types.ObjectId()
 
 const initialRooms = [
@@ -24,25 +25,32 @@ const initialUsers = [
   {
     _id: userId1,
     username: 'TheBadMF',
-    reservations: [reservationId1, reservationId2],
+    reservations: [reservationId1, reservationId2, reservationId3],
   },
 ]
 
 const initialReservations = [
+  // inactive
   {
     _id: reservationId1,
-    name: 'Test1',
-    startTime: new Date(),
-    endTime: new Date(Date.now() + (1000 * 60 * 60)), // 2019-03-13T15:00:00.000Z
-    active: true,
+    name: 'Test1 inactive',
+    startTime: '2019-03-13T16:00:00.000Z',
+    endTime: '2019-03-13T15:00:00.000Z',
     user: userId1,
   },
+  // active
   {
     _id: reservationId2,
     name: 'Test2',
     startTime: new Date(),
     endTime: new Date(Date.now() + (1000 * 60 * 60)),
-    active: true,
+    user: userId1,
+  },
+  {
+    _id: reservationId3,
+    name: 'Test3',
+    startTime: new Date(),
+    endTime: new Date(Date.now() + (1000 * 60 * 60)),
     user: userId1,
   },
 ]
