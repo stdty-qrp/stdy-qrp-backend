@@ -29,9 +29,9 @@ reservationsRouter.post('/', async (req, res, next) => {
 
     const reservation = new Reservation({
       name: body.name,
-      startTime: body.startTime,
-      endTime: body.endTime,
-      active: body.active || false,
+      startTime: body.startTime || new Date().toISOString(),
+      endTime: body.endTime || new Date(Date.now() + (1000 * 60 * 60)).toISOString(),
+      active: body.active || true,
       user: user._id,
     })
 
