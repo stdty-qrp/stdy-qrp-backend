@@ -13,6 +13,11 @@ jest.mock('node-telegram-bot-api')
 
 describe('when there is initially some reservations saved', () => {
   beforeEach(async () => {
+    await Room.remove({})
+    const roomObjects = helper.initialRooms.map(room => new Room(room))
+    const roomsPromiseArray = roomObjects.map(room => room.save())
+    await Promise.all(roomsPromiseArray)
+
     await User.remove({})
     const userObjects = helper.initialUsers.map(user => new User(user))
     const usersPromiseArray = userObjects.map(user => user.save())
@@ -52,13 +57,14 @@ describe('when there is initially some reservations saved', () => {
     test('a reservation can be added', async () => {
       const newReservation = {
         name: 'Test tseT',
-        startTime: Date.now(),
-        endTime: new Date(Date.now() + (1000 * 60 * 60)),
         username: 'TheBadMF',
       }
 
+      const roomsAtStart = await helper.roomsInDb()
+      const room = roomsAtStart[0]
+
       await api
-        .post('/api/rooms/123/reservation')
+        .post(`/api/rooms/${room.id}/reservation`)
         .send(newReservation)
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -76,8 +82,11 @@ describe('when there is initially some reservations saved', () => {
         username: 'TheBadMF',
       }
 
+      const roomsAtStart = await helper.roomsInDb()
+      const room = roomsAtStart[0]
+
       const result = await api
-        .post('/api/rooms/123/reservation')
+        .post(`/api/rooms/${room.id}/reservation`)
         .send(newReservation)
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -97,8 +106,11 @@ describe('when there is initially some reservations saved', () => {
         username: 'TheBadMF',
       }
 
+      const roomsAtStart = await helper.roomsInDb()
+      const room = roomsAtStart[0]
+
       await api
-        .post('/api/rooms/123/reservation')
+        .post(`/api/rooms/${room.id}/reservation`)
         .send(newReservation)
         .expect(400)
 
@@ -114,8 +126,11 @@ describe('when there is initially some reservations saved', () => {
         username: 'TheBadMF',
       }
 
+      const roomsAtStart = await helper.roomsInDb()
+      const room = roomsAtStart[0]
+
       const result = await api
-        .post('/api/rooms/123/reservation')
+        .post(`/api/rooms/${room.id}/reservation`)
         .send(newReservation)
         .expect(400)
 
@@ -133,8 +148,11 @@ describe('when there is initially some reservations saved', () => {
         username: 'TheBadMF',
       }
 
+      const roomsAtStart = await helper.roomsInDb()
+      const room = roomsAtStart[0]
+
       const result = await api
-        .post('/api/rooms/123/reservation')
+        .post(`/api/rooms/${room.id}/reservation`)
         .send(newReservation)
         .expect(400)
 
@@ -154,8 +172,11 @@ describe('when there is initially some reservations saved', () => {
         username: 'Stu Dent',
       }
 
+      const roomsAtStart = await helper.roomsInDb()
+      const room = roomsAtStart[0]
+
       await api
-        .post('/api/rooms/123/reservation')
+        .post(`/api/rooms/${room.id}/reservation`)
         .send(newReservation)
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -177,8 +198,11 @@ describe('when there is initially some reservations saved', () => {
         username: 'TheBadMF',
       }
 
+      const roomsAtStart = await helper.roomsInDb()
+      const room = roomsAtStart[0]
+
       await api
-        .post('/api/rooms/123/reservation')
+        .post(`/api/rooms/${room.id}/reservation`)
         .send(newReservation)
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -190,8 +214,24 @@ describe('when there is initially some reservations saved', () => {
       expect(usernames).toContain(newReservation.username)
     })
 
-    test('creation fails with proper statuscode and message if wrong room id provided', async () => {
-      // TODO
+    test('creation fails with proper statuscode and message if nonexisting room id provided', async () => {
+      const nonExistingRoomId = mongoose.Types.ObjectId(/*'56cb91bdc3464f14678934ca'*/)
+
+      const newReservation = {
+        name: 'Test tseT',
+        username: 'TheBadMF',
+      }
+
+      const result = await api
+        .post(`/api/rooms/${nonExistingRoomId}/reservation`)
+        .send(newReservation)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+
+      expect(result.body.error).toContain('room not found')
+
+      const reservationsAtEnd = await helper.reservationsInDb()
+      expect(reservationsAtEnd.length).toBe(helper.initialReservations.length)
     })
 
     test('room has only one active reservation at a time', async () => {
@@ -207,8 +247,11 @@ describe('when there is initially some reservations saved', () => {
         endTime: new Date(Date.now() + (1000 * 60 * 60)),
       }
 
+      const roomsAtStart = await helper.roomsInDb()
+      const room = roomsAtStart[0]
+
       const result = await api
-        .post('/api/rooms/123/reservation')
+        .post(`/api/rooms/${room.id}/reservation`)
         .send(newReservation)
         .expect(401)
 

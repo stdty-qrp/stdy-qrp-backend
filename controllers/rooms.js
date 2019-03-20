@@ -13,6 +13,11 @@ roomsRouter.post('/:id/reservation', async (req, res, next) => {
   const body = req.body
 
   try {
+    const room = await Room.findById(req.params.id)
+    if (!room) {
+      return res.status(400).send({ error: 'room not found' })
+    }
+
     if (!body.username) {
       return res.status(401).json({ error: 'username missing' })
     }
