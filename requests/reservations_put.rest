@@ -1,9 +1,10 @@
-PUT http://localhost:3001/api/reservations/5c891fb01c9d440000a83c83
+PUT http://localhost:3001/api/reservations/5c8e5babe03f3e6bb5bc1386
 content-type: application/json
 
 {
-  "startTime": "2019-03-19T21:30:00.000Z",
-  "endTime": "2019-03-19T22:45:00.000Z",
-  "name": "Testi1",
-  "active": false
+   "name": "New est with urs",
+    "startTime": "2019-03-20T21:30:00.000Z",
+    "endTime": "2019-03-20T22:30:00.000Z",
+    "active": true,
+    "id": "5c8e5babe03f3e6bb5bc1386"
 } 

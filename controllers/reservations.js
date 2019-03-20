@@ -1,9 +1,10 @@
 const reservationsRouter = require('express').Router()
 const Reservation = require('../models/reservation')
 const moment = require('moment')
+moment().locale('fi-FI')
 
 reservationsRouter.get('/', async (req, res) => {
-  const localTimeString = moment().locale('fi-FI')
+  const localTimeString = moment()
   const currentTime = moment(localTimeString, 'YYYY-MM-DD HH:mm:sss')
   const reservations = await Reservation.find({ endTime: { $gte: currentTime } })
     .populate('user', { id: 1, username: 1 })
