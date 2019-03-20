@@ -7,7 +7,13 @@ const moment = require('moment')
 reservationsRouter.get('/', async (req, res) => {
   const localTimeString = moment().locale('fi-FI')
   const currentTime = moment(localTimeString, 'YYYY-MM-DD HH:mm:sss')
-  const reservations = await Reservation.find({ endTime: { $gte: currentTime } })  // FIXME
+  const reservations = await Reservation.find({ endTime: { $gte: currentTime } })
+    .populate('user', { id: 1, username: 1 })
+  res.json(reservations.map(r => r.toJSON()))
+})
+
+reservationsRouter.get('/all', async (req, res) => {
+  const reservations = await Reservation.find({})
     .populate('user', { id: 1, username: 1 })
   res.json(reservations.map(r => r.toJSON()))
 })
@@ -32,9 +38,8 @@ reservationsRouter.post('/', async (req, res, next) => {
 
     const reservation = new Reservation({
       name: body.name,
-      startTime: body.startTime,
-      endTime: body.endTime,
-      active: body.active || false,
+      startTime: body.startTime || new Date().toISOString(),
+      endTime: body.endTime || new Date(Date.now() + (1000 * 60 * 60)).toISOString(),
       user: user._id,
     })
 
@@ -66,7 +71,6 @@ reservationsRouter.put('/:id', (req, res) => {
     name: body.name,
     startTime: body.startTime,
     endTime: body.endTime,
-    active: body.active,
   }
 
   Reservation.findOneAndUpdate({ _id: req.params.id }, reservation, { new: true })
