@@ -1,3 +1,4 @@
+const moment = require('moment')
 const roomsRouter = require('express').Router()
 const telegramBotService = require('../services/messageService')
 const Reservation = require('../models/reservation')
@@ -13,9 +14,21 @@ roomsRouter.post('/:id/reservation', async (req, res, next) => {
   const body = req.body
 
   try {
+    const localTimeString = moment()
+    const currentTime = moment(localTimeString, 'YYYY-MM-DD HH:mm:sss')
+
     const room = await Room.findById(req.params.id)
+      .populate({
+        path: 'reservations',
+        match: { endTime: { $gte: currentTime } },
+      })
+
     if (!room) {
       return res.status(400).send({ error: 'room not found' })
+    }
+
+    if (room.reservations.length) {
+      return res.status(400).send({ error: 'room is full' })
     }
 
     if (!body.username) {
@@ -37,9 +50,14 @@ roomsRouter.post('/:id/reservation', async (req, res, next) => {
       startTime: body.startTime || new Date().toISOString(),
       endTime: body.endTime || new Date(Date.now() + (1000 * 60 * 60)).toISOString(),
       user: user._id,
+      room: room._id,
     })
 
     const savedReservation = await reservation.save()
+
+    room.reservations = room.reservations.concat(savedReservation._id)
+    await room.save()
+
     user.reservations = user.reservations.concat(savedReservation._id)
     await user.save()
     // let's send a message to Telegram

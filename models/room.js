@@ -9,10 +9,12 @@ const roomSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  reservation: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Reservation',
-  },
+  reservations: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Reservation'
+    }
+  ],
 })
 
 roomSchema.set('toJSON', {

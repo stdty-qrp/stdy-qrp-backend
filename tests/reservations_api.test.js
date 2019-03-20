@@ -26,8 +26,9 @@ describe('when there is initially some reservations saved', () => {
     await Reservation.remove({})
     const reservationObjects = helper.initialReservations.map(reservation => new Reservation(reservation))
 
-    const inactiveReservation = reservationObjects.shift()
-    await inactiveReservation.save({ validateBeforeSave: false })
+    const inactiveReservations = reservationObjects.splice(0, 2)
+    const inactiveReservationsPromiseArray = inactiveReservations.map(reservation => reservation.save({ validateBeforeSave: false }))
+    await Promise.all(inactiveReservationsPromiseArray)
 
     const reservationsPromiseArray = reservationObjects.map(reservation => reservation.save())
     await Promise.all(reservationsPromiseArray)
@@ -235,7 +236,41 @@ describe('when there is initially some reservations saved', () => {
     })
 
     test('room has only one active reservation at a time', async () => {
-      // TODO
+      const newReservation1 = {
+        name: 'Double booking like a biz wiz',
+        username: 'TheBadMF',
+      }
+
+      const roomsAtStart = await helper.roomsInDb()
+      const room = roomsAtStart[roomsAtStart.length - 1]
+
+      await api
+        .post(`/api/rooms/${room.id}/reservation`)
+        .send(newReservation1)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+      let reservationsAtEnd = await helper.reservationsInDb()
+      expect(reservationsAtEnd.length).toBe(helper.initialReservations.length + 1)
+
+      const names = reservationsAtEnd.map(b => b.name)
+      expect(names).toContain('Double booking like a biz wiz')
+
+      const newReservation2 = {
+        name: 'Double booking like a biz wiz remix',
+        username: 'Stu Dent',
+      }
+
+      const result = await api
+        .post(`/api/rooms/${room.id}/reservation`)
+        .send(newReservation2)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+
+      expect(result.body.error).toContain('room is full')
+
+      reservationsAtEnd = await helper.reservationsInDb()
+      expect(reservationsAtEnd.length).toBe(helper.initialReservations.length + 1)
     })
 
     test('creation fails with proper statuscode and message if no username provided', async () => {

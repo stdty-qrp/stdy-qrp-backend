@@ -19,6 +19,10 @@ const reservationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
+  room: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Room',
+  },
 })
 
 // https://stackoverflow.com/a/29416193/7010222

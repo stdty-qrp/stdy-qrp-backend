@@ -3,7 +3,7 @@ const User = require('../models/user')
 
 usersRouter.get('/', async (req, res) => {
   const users = await User.find({})
-    .populate('reservations', { id: 1, name: 1, startTime: 1, endTime: 1, active: 1 })
+    .populate('reservations', { id: 1, name: 1, startTime: 1, endTime: 1 })
   res.json(users.map(u => u.toJSON()))
 })
 
