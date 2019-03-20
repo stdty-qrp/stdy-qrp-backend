@@ -8,12 +8,14 @@ reservationsRouter.get('/', async (req, res) => {
   const currentTime = moment(localTimeString, 'YYYY-MM-DD HH:mm:sss')
   const reservations = await Reservation.find({ endTime: { $gte: currentTime } })
     .populate('user', { id: 1, username: 1 })
+    .populate('room', { id: 1, name: 1, code: 1 })
   res.json(reservations.map(r => r.toJSON()))
 })
 
 reservationsRouter.get('/all', async (req, res) => {
   const reservations = await Reservation.find({})
     .populate('user', { id: 1, username: 1 })
+    .populate('room', { id: 1, name: 1, code: 1 })
   res.json(reservations.map(r => r.toJSON()))
 })
 
