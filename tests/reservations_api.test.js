@@ -58,7 +58,7 @@ describe('when there is initially some reservations saved', () => {
       }
 
       await api
-        .post('/api/reservations')
+        .post('/api/rooms/123/reservation')
         .send(newReservation)
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -76,14 +76,14 @@ describe('when there is initially some reservations saved', () => {
         username: 'TheBadMF',
       }
 
-      /* const result = */await api
-        .post('/api/reservations')
+      const result = await api
+        .post('/api/rooms/123/reservation')
         .send(newReservation)
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
-      // const reservation = result.body
-      // TODO: validate `startTime`, `endTime`
+      expect(result.body.startTime).toBeDefined()
+      expect(result.body.endTime).toBeDefined()
 
       const reservationsAtEnd = await helper.reservationsInDb()
       expect(reservationsAtEnd.length).toBe(helper.initialReservations.length + 1)
@@ -98,7 +98,7 @@ describe('when there is initially some reservations saved', () => {
       }
 
       await api
-        .post('/api/reservations')
+        .post('/api/rooms/123/reservation')
         .send(newReservation)
         .expect(400)
 
@@ -115,7 +115,7 @@ describe('when there is initially some reservations saved', () => {
       }
 
       const result = await api
-        .post('/api/reservations')
+        .post('/api/rooms/123/reservation')
         .send(newReservation)
         .expect(400)
 
@@ -134,7 +134,7 @@ describe('when there is initially some reservations saved', () => {
       }
 
       const result = await api
-        .post('/api/reservations')
+        .post('/api/rooms/123/reservation')
         .send(newReservation)
         .expect(400)
 
@@ -155,7 +155,7 @@ describe('when there is initially some reservations saved', () => {
       }
 
       await api
-        .post('/api/reservations')
+        .post('/api/rooms/123/reservation')
         .send(newReservation)
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -178,7 +178,7 @@ describe('when there is initially some reservations saved', () => {
       }
 
       await api
-        .post('/api/reservations')
+        .post('/api/rooms/123/reservation')
         .send(newReservation)
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -188,6 +188,14 @@ describe('when there is initially some reservations saved', () => {
 
       const usernames = usersAtEnd.map(u => u.username)
       expect(usernames).toContain(newReservation.username)
+    })
+
+    test('creation fails with proper statuscode and message if wrong room id provided', async () => {
+      // TODO
+    })
+
+    test('room has only one active reservation at a time', async () => {
+      // TODO
     })
 
     test('creation fails with proper statuscode and message if no username provided', async () => {
@@ -200,7 +208,7 @@ describe('when there is initially some reservations saved', () => {
       }
 
       const result = await api
-        .post('/api/reservations')
+        .post('/api/rooms/123/reservation')
         .send(newReservation)
         .expect(401)
 
