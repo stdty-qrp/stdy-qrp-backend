@@ -23,7 +23,7 @@ const reservationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Room',
   },
-})
+}, { timestamps: true })
 
 // https://stackoverflow.com/a/29416193/7010222
 function dateValidator(value) {

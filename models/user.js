@@ -8,14 +8,13 @@ const userSchema = new mongoose.Schema({
   },
   name: String,
   email: String,
-  created: Date,
   reservations: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Reservation'
     }
   ],
-})
+}, { timestamps: true })
 
 userSchema.set('toJSON', {
   transform: (document, returnedObject) => {

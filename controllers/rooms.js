@@ -57,7 +57,6 @@ roomsRouter.post('/:id/reservation', async (req, res, next) => {
     if (!user) {
       const newUser = new User({
         username: body.username,
-        created: new Date().toISOString(),
       })
       user = await newUser.save()
     }

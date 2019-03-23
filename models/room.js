@@ -15,7 +15,7 @@ const roomSchema = new mongoose.Schema({
       ref: 'Reservation'
     }
   ],
-})
+}, { timestamps: true })
 
 roomSchema.set('toJSON', {
   transform: (document, returnedObject) => {

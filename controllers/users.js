@@ -19,7 +19,6 @@ usersRouter.post('/', async (req, res, next) => {
     name: body.name,
     username: body.username,
     reservation: [],
-    created: new Date().toISOString()
   })
 
   try {
