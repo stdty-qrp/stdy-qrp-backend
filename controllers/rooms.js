@@ -10,6 +10,23 @@ roomsRouter.get('/', async (req, res) => {
   res.json(rooms.map(u => u.toJSON()))
 })
 
+roomsRouter.get('/:code', async (req, res) => {
+  const localTimeString = moment()
+  const currentTime = moment(localTimeString, 'YYYY-MM-DD HH:mm:sss')
+
+  const room = await Room.findOne({ code: req.params.code })
+    .populate({
+      path: 'reservations',
+      match: { endTime: { $gte: currentTime } },
+    })
+
+  if (!room) {
+    return res.status(400).send({ error: 'room not found' })
+  }
+
+  res.json(room.toJSON())
+})
+
 roomsRouter.post('/:id/reservation', async (req, res, next) => {
   const body = req.body
 
@@ -69,10 +86,5 @@ roomsRouter.post('/:id/reservation', async (req, res, next) => {
     next(exception)
   }
 })
-
-// roomsRouter.get('/:id', async (req, res) => {
-//   const room = await Room.findOne({ _id: req.params.id })
-//   res.json(room.toJSON())
-// })
 
 module.exports = roomsRouter

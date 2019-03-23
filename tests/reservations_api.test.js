@@ -330,6 +330,21 @@ describe('rooms', () => {
     const response = await api.get('/api/rooms')
     expect(response.body.length).toBe(helper.initialRooms.length)
   })
+
+  test('return room when searched with valid code', async () => {
+    const roomCode = '420'
+    const response = await api.get(`/api/rooms/${roomCode}`)
+    expect(response.body.code).toBe(roomCode)
+  })
+
+  test('return error when room search with invalid code', async () => {
+    const roomCode = 'NaN'
+    const response = await api
+      .get(`/api/rooms/${roomCode}`)
+      .expect(400)
+
+    expect(response.body.error).toContain('room not found')
+  })
 })
 
 afterAll(() => {
