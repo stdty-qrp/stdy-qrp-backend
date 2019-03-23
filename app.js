@@ -26,7 +26,7 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 app.use(cors())
-// app.use(express.static('build'))
+app.use(express.static('build'))
 app.use(bodyParser.json())
 app.use(middleware.requestLogger)
 
