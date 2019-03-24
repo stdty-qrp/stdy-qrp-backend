@@ -77,7 +77,8 @@ roomsRouter.post('/:id/reservation', async (req, res, next) => {
     user.reservations = user.reservations.concat(savedReservation._id)
     await user.save()
     // let's send a message to Telegram
-    telegramBotService.sendMessage(`A new reservation created by ${user.username}. The subject of the is ${reservation.name}`)
+    telegramBotService.sendMessage( { parse_mode: 'HTML' }, `A new study group created by <b>${user.username}</b>.`+
+    ` The subject of the group is <b>${reservation.name}</b>. The room is <b>${room.name}</b>`)
 
     await Reservation.populate(savedReservation, { path: 'user', select: { 'username': 1, 'id': 1 } })
     res.json(savedReservation.toJSON())

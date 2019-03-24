@@ -25,13 +25,13 @@ const telegramBotService = (function(){
     const chatId = msg.chat.id
     console.log('Got a message! chatid', chatId)
     // send a message to the chat acknowledging receipt of their message
-    bot.sendMessage(chatId, 'Received your message')
+    bot.sendMessage(chatId, 'Received your message!', { parse_mode: 'HTML' })
   })
 
   // TODO: not the right way to use this but it's a start...(jone)
   return {
     sendMessage: (message) => {
-      bot.sendMessage(519736021, message)
+      bot.sendMessage(519736021, message, { parse_mode: 'HTML' })
     }
   }
 
