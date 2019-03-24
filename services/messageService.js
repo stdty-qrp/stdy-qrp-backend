@@ -28,7 +28,6 @@ const telegramBotService = (function(){
     bot.sendMessage(chatId, 'Received your message!', { parse_mode: 'HTML' })
   })
 
-  // TODO: not the right way to use this but it's a start...(jone)
   return {
     sendMessage: (message) => {
       bot.sendMessage(519736021, message, { parse_mode: 'HTML' })
