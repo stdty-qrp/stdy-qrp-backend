@@ -80,7 +80,12 @@ roomsRouter.post('/:id/reservation', async (req, res, next) => {
     telegramBotService.sendMessage( `A new study group created by <b>${user.username}</b>.`+
     ` The subject of the group is <b>${reservation.name}</b>. The room is <b>${room.name}</b>`)
 
-    await Reservation.populate(savedReservation, { path: 'user', select: { 'username': 1, 'id': 1 } })
+    await Reservation
+      .populate(savedReservation, [
+        { path: 'user', select: { 'id': 1, 'username': 1 } },
+        { path: 'room', select: { 'id': 1, 'name': 1, 'code': 1 } }
+      ])
+
     res.json(savedReservation.toJSON())
   } catch(exception) {
     next(exception)
