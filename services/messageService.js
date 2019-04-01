@@ -7,6 +7,11 @@ const telegramBotService = (function(){
     polling: true
   })
 
+  bot.onText(/\/rooms/, (msg) => {
+    const chatId = msg.chat.id
+    bot.sendMessage(chatId, 'Wait a sec... My algorithm is slow...', { parse_mode: 'HTML' })
+  })
+
   // Matches "/echo [whatever]"
   bot.onText(/\/echo (.+)/, (msg, match) => {
     // 'msg' is the received Message from Telegram
