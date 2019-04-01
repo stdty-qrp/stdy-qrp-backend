@@ -9,6 +9,7 @@ const middleware = require('./utils/middleware')
 const mongoose = require('mongoose')
 const logger = require('./utils/logger')
 const cors = require('cors')
+if (process.env.NODE_ENV !== 'test') require('./services/messageService')
 
 logger.info('connecting to', config.MONGODB_URI)
 
@@ -19,11 +20,6 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true })
   .catch(error => {
     logger.error('error conneting to MongoDB:', error.message)
   })
-
-if (process.env.NODE_ENV !== 'test') {
-  const telegramBotService = require('./services/messageService')
-  telegramBotService.sendMessage('Hi! I\'m StdyQrpBot and I\'m listening...' )
-}
 
 app.use(cors())
 app.use(express.static('build'))
