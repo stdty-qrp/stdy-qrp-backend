@@ -26,7 +26,7 @@ const telegramBotService = (function(){
 
   return {
     sendMessage: (message) => {
-      bot.sendMessage(519736021, message, { parse_mode: 'HTML' })
+      bot.sendMessage(process.env.TELEGRAM_GROUP_ID, message, { parse_mode: 'HTML' })
     }
   }
 
