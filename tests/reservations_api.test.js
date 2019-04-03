@@ -14,24 +14,13 @@ jest.mock('node-telegram-bot-api')
 describe('when there is initially some reservations saved', () => {
   beforeEach(async () => {
     await Room.remove({})
-    const roomObjects = helper.initialRooms.map(room => new Room(room))
-    const roomsPromiseArray = roomObjects.map(room => room.save())
-    await Promise.all(roomsPromiseArray)
+    await Room.collection.insertMany(helper.initialRooms)
 
     await User.remove({})
-    const userObjects = helper.initialUsers.map(user => new User(user))
-    const usersPromiseArray = userObjects.map(user => user.save())
-    await Promise.all(usersPromiseArray)
+    await User.collection.insertMany(helper.initialUsers)
 
     await Reservation.remove({})
-    const reservationObjects = helper.initialReservations.map(reservation => new Reservation(reservation))
-
-    const inactiveReservations = reservationObjects.splice(0, 2)
-    const inactiveReservationsPromiseArray = inactiveReservations.map(reservation => reservation.save({ validateBeforeSave: false }))
-    await Promise.all(inactiveReservationsPromiseArray)
-
-    const reservationsPromiseArray = reservationObjects.map(reservation => reservation.save())
-    await Promise.all(reservationsPromiseArray)
+    await Reservation.collection.insertMany(helper.initialReservations/* { ordered: false } */)
   })
 
   test('all reservations are returned', async () => {
