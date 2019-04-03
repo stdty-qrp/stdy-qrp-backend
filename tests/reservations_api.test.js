@@ -14,32 +14,37 @@ jest.mock('node-telegram-bot-api')
 describe('when there is initially some reservations saved', () => {
   beforeEach(async () => {
     await Room.remove({})
-    await Room.collection.insertMany(helper.initialRooms)
+    await Room.insertMany(helper.initialRooms)
 
     await User.remove({})
-    await User.collection.insertMany(helper.initialUsers)
+    await User.insertMany(helper.initialUsers)
 
     await Reservation.remove({})
-    await Reservation.collection.insertMany(helper.initialReservations/* { ordered: false } */)
+    // Bypass validation
+    // https://stackoverflow.com/a/27199244/7010222
+    await Reservation.collection.insertMany(helper.initialReservations)
   })
 
-  test('all reservations are returned', async () => {
-    const response = await api.get('/api/reservations/all')
-    expect(response.body.length).toBe(helper.initialReservations.length)
-  })
+  describe('returning reservations', () => {
 
-  test('active reservations are returned', async () => {
-    const response = await api.get('/api/reservations')
-
-    response.body.forEach((reservation) => {
-      expect(new Date(reservation.endTime).getTime()).toBeGreaterThanOrEqual(new Date().getTime())
+    test('all reservations are returned', async () => {
+      const response = await api.get('/api/reservations/all')
+      expect(response.body.length).toBe(helper.initialReservations.length)
     })
-  })
 
-  test('a valid id field is generated', async () => {
-    const response = await api.get('/api/reservations')
+    test('active reservations are returned', async () => {
+      const response = await api.get('/api/reservations')
 
-    expect(response.body[0].id).toBeDefined()
+      response.body.forEach((reservation) => {
+        expect(new Date(reservation.endTime).getTime()).toBeGreaterThanOrEqual(new Date().getTime())
+      })
+    })
+
+    test('a valid id field is generated', async () => {
+      const response = await api.get('/api/reservations')
+
+      expect(response.body[0].id).toBeDefined()
+    })
   })
 
   describe('addition of a new reservation', () => {
@@ -290,19 +295,22 @@ describe('when there is initially some reservations saved', () => {
 
   })
 
-  test('a reservation can be deleted', async () => {
-    const reservationsAtStart = await helper.reservationsInDb()
-    const reservationToDelete = reservationsAtStart[0]
+  describe('deletion of a new reservation', () => {
 
-    await api
-      .delete(`/api/reservations/${reservationToDelete.id}`)
-      .expect(204)
+    test('a reservation can be deleted', async () => {
+      const reservationsAtStart = await helper.reservationsInDb()
+      const reservationToDelete = reservationsAtStart[0]
 
-    const reservationsAtEnd = await helper.reservationsInDb()
-    expect(reservationsAtEnd.length).toBe(helper.initialReservations.length - 1)
+      await api
+        .delete(`/api/reservations/${reservationToDelete.id}`)
+        .expect(204)
 
-    const names = reservationsAtEnd.map(r => r.name)
-    expect(names).not.toContain(reservationToDelete.name)
+      const reservationsAtEnd = await helper.reservationsInDb()
+      expect(reservationsAtEnd.length).toBe(helper.initialReservations.length - 1)
+
+      const names = reservationsAtEnd.map(r => r.name)
+      expect(names).not.toContain(reservationToDelete.name)
+    })
   })
 
 })
