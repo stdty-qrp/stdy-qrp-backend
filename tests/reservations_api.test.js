@@ -310,9 +310,7 @@ describe('when there is initially some reservations saved', () => {
 describe('rooms', () => {
   beforeEach(async () => {
     await Room.remove({})
-    const roomObjects = helper.initialRooms.map(room => new Room(room))
-    const roomsPromiseArray = roomObjects.map(room => room.save())
-    await Promise.all(roomsPromiseArray)
+    await Room.insertMany(helper.initialRooms)
   })
 
   test('all rooms are returned', async () => {
