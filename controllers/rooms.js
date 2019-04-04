@@ -52,6 +52,10 @@ roomsRouter.post('/:id/reservation', async (req, res, next) => {
       return res.status(401).json({ error: 'username missing' })
     }
 
+    if (!body.channelId) {
+      return res.status(401).json({ error: 'channel missing' })
+    }
+
     let user = await User.findOne({ username: body.username })
 
     if (!user) {
@@ -66,7 +70,7 @@ roomsRouter.post('/:id/reservation', async (req, res, next) => {
       startTime: body.startTime || new Date().toISOString(),
       endTime: body.endTime || new Date(Date.now() + (1000 * 60 * 60)).toISOString(),
       user: user._id,
-      room: room._id,
+      room: room._id
     })
 
     const savedReservation = await reservation.save()
@@ -77,7 +81,7 @@ roomsRouter.post('/:id/reservation', async (req, res, next) => {
     user.reservations = user.reservations.concat(savedReservation._id)
     await user.save()
     // let's send a message to Telegram
-    telegramBotService.sendMessage( `A new study group created by <b>${user.username}</b>.`+
+    telegramBotService.sendMessage( body.channelId, `A new study group created by <b>${user.username}</b>.`+
     ` The subject of the group is <b>${reservation.name}</b>. The room is <b>${room.name}</b>`)
 
     await Reservation
