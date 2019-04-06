@@ -21,12 +21,23 @@ const telegramBotService = (function(){
     console.log('Got a message! chatid', chatId)
     const resp = match[1] // the captured "whatever"
     // send back the matched "whatever" to the chat
-    bot.sendMessage(chatId, `Received your message! ${msg.from.username} said ${resp}`, { parse_mode: 'HTML' })
+    bot.sendMessage(chatId, resp)
   })
 
+  // Listen for any kind of message. There are different kinds of
+  // messages.
+  bot.on('message', (msg) => {
+    const chatId = msg.chat.id
+    console.log('Got a message! chatid', chatId, msg)
+
+    // send a message to the chat acknowledging receipt of their message
+    bot.sendMessage(chatId, 'Received your message!' + msg.text, { parse_mode: 'HTML' })
+  })
+
+  // TODO: not the right way to use this but it's a start...(jone)
   return {
-    sendMessage: (message) => {
-      bot.sendMessage(process.env.TELEGRAM_GROUP_ID, message, { parse_mode: 'HTML' })
+    sendMessage: (groupId, message) => {
+      bot.sendMessage(groupId, message, { parse_mode: 'HTML' })
     }
   }
 
