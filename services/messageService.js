@@ -24,16 +24,6 @@ const telegramBotService = (function(){
     bot.sendMessage(chatId, resp)
   })
 
-  // Listen for any kind of message. There are different kinds of
-  // messages.
-  bot.on('message', (msg) => {
-    const chatId = msg.chat.id
-    console.log('Got a message! chatid', chatId, msg)
-
-    // send a message to the chat acknowledging receipt of their message
-    bot.sendMessage(chatId, 'Received your message!' + msg.text, { parse_mode: 'HTML' })
-  })
-
   // TODO: not the right way to use this but it's a start...(jone)
   return {
     sendMessage: (groupId, message) => {
