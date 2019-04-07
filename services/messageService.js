@@ -21,7 +21,7 @@ const telegramBotService = (function(){
     console.log('Got a message! chatid', chatId)
     const resp = match[1] // the captured "whatever"
     // send back the matched "whatever" to the chat
-    bot.sendMessage(chatId, resp)
+    bot.sendMessage(chatId, `Received your message! ${msg.from.username} said ${resp}`, { parse_mode: 'HTML' })
   })
 
   // TODO: not the right way to use this but it's a start...(jone)
