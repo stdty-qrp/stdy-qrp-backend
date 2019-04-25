@@ -81,9 +81,22 @@ roomsRouter.post('/:id/reservation', async (req, res, next) => {
     user.reservations = user.reservations.concat(savedReservation._id)
     await user.save()
     // let's send a message to Telegram
-    const messageByRoomCode = room.code === '123' ? `Creator: <b>${user.username}</b>\n` +
-      `Subject: <b>${reservation.name}</b>\nRoom: <b>${room.name}</b>`
-      : `<b>${user.username}</b> just created a new study group.\nThe subject is "${reservation.name}". \nFeel free to join in room <b>${room.name}!</b>`
+
+    let messageByRoomCode
+
+    if (room.code === '123') {
+      messageByRoomCode =
+        `Creator: <b>${user.username}</b>\n` +
+        `Subject: <b>${reservation.name}</b>\n` +
+        `Room: <b>${room.name}</b>\n` +
+        `Time: <b>${moment(reservation.startTime).format('HH.mm')}-${moment(reservation.endTime).format('HH.mm')}</b>`
+    } else {
+      messageByRoomCode =
+        `<b>${user.username}</b> just created a new study group: <i>"${reservation.name}"</i>\n\n` +
+        `Feel free to join in room <b>${room.name}</b> ` +
+        `anytime from ${moment(reservation.startTime).format('HH.mm')} to ${moment(reservation.endTime).format('HH.mm')}!`
+    }
+
     telegramBotService.sendMessage(body.channelId, messageByRoomCode)
 
     await Reservation
